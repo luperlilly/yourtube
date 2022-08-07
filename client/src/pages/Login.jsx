@@ -1,11 +1,12 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import styled from "styled-components"
-import axios from 'axios'
+
 import { useDispatch } from "react-redux"
 import { authFailure, authStart, authSuccess } from "../redux/userSlice"
 import { auth, provider } from "../firebase"
 import { signInWithPopup } from 'firebase/auth'
+import { API } from "../config/client"
 
 const Container = styled.div`
   display: flex;
@@ -79,7 +80,7 @@ const Login = () => {
     e.preventDefault()
     dispatch(authStart())
     try {
-      const res = await axios.post('/auth/login', { name, password })
+      const res = await API.post('/auth/login', { name, password })
       dispatch(authSuccess(res.data))
       navigate('/')
     } catch (error) {
@@ -91,7 +92,7 @@ const Login = () => {
     e.preventDefault()
     dispatch(authStart())
     try {
-      const res = await axios.post('/auth/signup', { name, email, password })
+      const res = await API.post('/auth/signup', { name, email, password })
       dispatch(authSuccess(res.data))
       navigate('/')
     } catch (error) {
@@ -102,11 +103,12 @@ const Login = () => {
   const signInWithGoogle = async () => {
     dispatch(authStart())
     signInWithPopup(auth, provider).then((result) => {
-      axios.post('/auth/google', {
+      API.post('/auth/google', {
         name: result.user.displayName,
         email: result.user.email,
         img: result.user.photoURL,
       }).then((res) => {
+        console.log(res.data)
         dispatch(authSuccess(res.data))
       })
     })

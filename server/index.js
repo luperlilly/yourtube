@@ -1,6 +1,7 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import path from 'path'
 import cookieParser from 'cookie-parser'
 import userRoutes from './routes/userRoutes.js'
 import authRoutes from './routes/authRoutes.js'
@@ -24,6 +25,20 @@ const connect = () => {
   mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log('Connected to database')
   }).catch(error => { throw error })
+}
+
+const __dirname = path.resolve()
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '/client/build')))
+
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
+  )
+} else {
+  app.get('/', (req, res) => {
+    res.send('API is running....')
+  })
 }
 
 app.use((err, req, res, next) => {

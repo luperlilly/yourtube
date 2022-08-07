@@ -9,11 +9,11 @@ import Comments from "../components/Comments"
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
-import axios from "axios"
 import { dislike, fetchSuccess, like } from "../redux/videoSlice"
 import TimeAgo from 'react-timeago'
 import { subscription } from "../redux/userSlice"
 import Recommendation from "../components/Recommendation"
+import { API } from "../config/client"
 
 const Container = styled.div`
   display: flex;
@@ -128,12 +128,13 @@ const Video = () => {
   const path = useLocation().pathname.split("/")[2]
 
   const [channel, setChannel] = useState({})
- 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const videoRes = await axios.get(`/videos/find/${path}`)
-        const channelRes = await axios.get(`/users/find/${videoRes.data.userId}`)
+        const videoRes = await API.get(`/videos/find/${path}`)
+        const channelRes = await API.get(`/users/find/${videoRes.data.userId}`)
+        console.log(videoRes)
         setChannel(channelRes.data)
         dispatch(fetchSuccess(videoRes.data))
       } catch (error) {
@@ -144,21 +145,24 @@ const Video = () => {
   }, [path, dispatch])
 
   const handleLike = async () => {
-    await axios.put(`/users/like/${video._id}`)
+    await API.put(`/users/like/${video._id}`)
     dispatch(like(currentUser._id))
   }
 
   const handleDislike = async () => {
-    await axios.put(`/users/dislike/${video._id}`)
+    await API.put(`/users/dislike/${video._id}`)
     dispatch(dislike(currentUser._id))
   }
 
   const handleSub = async () => {
     currentUser.subscribedTo.includes(channel._id)
-    ? await axios.put(`/users/unsub/${channel._id}`)
-    : await axios.put(`/users/sub/${channel._id}`)
+      ? await API.put(`/users/unsub/${channel._id}`)
+      : await API.put(`/users/sub/${channel._id}`)
     dispatch(subscription(channel._id))
   }
+
+  if (!video)
+    return;
 
   return (
     <Container>

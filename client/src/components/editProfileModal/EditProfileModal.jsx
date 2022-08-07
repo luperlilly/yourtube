@@ -3,7 +3,7 @@ import { updateFailure, updateStart, updateSuccess } from '../../redux/userSlice
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import axios from 'axios'
+
 import './edit-profile-modal.css'
 import { useEffect } from 'react'
 import {
@@ -14,6 +14,7 @@ import {
 } from 'firebase/storage'
 
 import app from '../../firebase'
+import { API } from '../../config/client'
 
 const EditProfileModal = ({ modalOpened, setModalOpened }) => {
   const theme = useMantineTheme()
@@ -71,7 +72,7 @@ const EditProfileModal = ({ modalOpened, setModalOpened }) => {
     dispatch(updateStart())
 
     try {
-      const res = await axios.put(`users/${currentUser._id}`, { ...inputs })
+      const res = await API.put(`/users/${currentUser._id}`, { ...inputs })
       dispatch(updateSuccess(res.data))
       navigate('/')
     } catch (error) {

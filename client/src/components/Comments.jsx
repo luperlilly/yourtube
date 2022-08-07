@@ -1,8 +1,8 @@
-import axios from "axios"
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import styled from "styled-components"
+import { API } from "../config/client"
 import Comment from "./Comment"
 
 const Container = styled.div`
@@ -39,7 +39,7 @@ const Comments = ({ videoId }) => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const res = await axios.get(`/comments/${videoId}`)
+        const res = await API.get(`/comments/${videoId}`)
         setComments(res.data)
       } catch (error) {
         console.log(error)
@@ -54,7 +54,7 @@ const Comments = ({ videoId }) => {
 
   const handleNewComment = async (e) => {
     e.preventDefault()
-    const res = await axios.post('/comments', { content: newComment, videoId: videoId })
+    const res = await API.post('/comments', { content: newComment, videoId: videoId })
     res.status === 200 && window.location.reload()
   }
 
